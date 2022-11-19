@@ -23,7 +23,9 @@ namespace DuploParser
 
             services.AddDbContext<AppDb>(options => options.UseMySql(connectionStr, new MySqlServerVersion(new Version(8, 0, 27))));
             services.AddSingleton<IDuploApi, DuploApi>(service => new DuploApi(bearerToken));
-            services.AddSingleton<ITelegramService, TelegramService>(service => new TelegramService(botToken, channelId));
+
+            services.AddSingleton<ITelegramProvider, TelegramProvider>(service => new TelegramProvider(channelId));
+            services.AddHostedService(service => new TelegramService(botToken, service.GetRequiredService<ITelegramProvider>()));
             services.AddHostedService<MonitorService>();
             services.AddControllersWithViews();
         }

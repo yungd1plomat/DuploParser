@@ -1,47 +1,47 @@
 ﻿using DuploParser.Abstractions;
 using DuploParser.Models;
 using DuploParser.Models.Api;
+using System.Collections.Concurrent;
 
 namespace DuploParser.Services
 {
-    public class TelegramService : ITelegramService, IDisposable
+    public class TelegramService : BackgroundService, IDisposable
     {
         const string BaseUrl = "https://api.telegram.org";
+
+        const int Delay = 2000;
 
 
         private readonly string _token;
 
-        private readonly string _channelId;
+        private readonly ITelegramProvider _telegramProvider;
 
-        private HttpClient _client;
+        private HttpClient _client { get; set; }
 
-        public TelegramService(string token, string channelId)
+
+        public TelegramService(string token, ITelegramProvider provider)
         {
             _token = token;
-            _channelId = channelId;
             _client = new HttpClient();
+            _telegramProvider = provider;
         }
 
-        public string GenerateDescription(Tyre tyre)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task SendTyre(Tyre tyre)
-        {
-            var description = GenerateDescription(tyre);
-            var photoUrl = tyre.Model.LogoUrl.Replace("//", null);
-            var messageParams = new MessageParams()
+            while (!stoppingToken.IsCancellationRequested)
             {
-                ChatId = _channelId,
-                Description = description,
-                Photo = photoUrl,
-            };
-            await _client.PostAsJsonAsync<MessageParams>($"{BaseUrl}/bot{_token}/sendPhoto", messageParams);
+                var message = _telegramProvider.GetQueueMsg();
+                if (message is not null)
+                {
+                    await _client.PostAsJsonAsync($"{BaseUrl}/bot{_token}/sendPhoto?parse_mode=MarkdownV2", message);
+                }
+                await Task.Delay(Delay);
+            }
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
+            base.Dispose();
             _client.Dispose();
         }
     }

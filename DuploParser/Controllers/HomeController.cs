@@ -1,6 +1,7 @@
 ﻿using DuploParser.Data;
 using DuploParser.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace DuploParser.Controllers
@@ -19,9 +20,18 @@ namespace DuploParser.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var filters = await _database.Filters.ToListAsync();
+            return View(filters);
+        }
+
+        [HttpPost("add")]
+        public async Task<IActionResult> Add([FromForm] Filter filter)
+        {
+            await _database.AddAsync(filter);
+            await _database.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
     }
 }

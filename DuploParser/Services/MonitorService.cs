@@ -15,15 +15,16 @@ namespace DuploParser.Services
 
         private readonly ILogger _logger;
 
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramProvider _telegramProvider;
+
         private IList<string> _allTyres { get; set; }
 
-        public MonitorService(IDuploApi api, IServiceScopeFactory scopeFactory, ILogger<MonitorService> logger, ITelegramService telegramService)
+        public MonitorService(IDuploApi api, IServiceScopeFactory scopeFactory, ILogger<MonitorService> logger, ITelegramProvider telegramProvider)
         {
             _api = api;
             _scopeFactory = scopeFactory;
             _logger = logger;
-            _telegramService = telegramService;
+            _telegramProvider = telegramProvider;
             _allTyres = new List<string>();
         }
 
@@ -78,7 +79,7 @@ namespace DuploParser.Services
                     continue;
                 }
                 _allTyres.Add(tyre.Id);
-                await _telegramService.SendTyre(tyre);
+                _telegramProvider.Enqueue(tyre);
                 count++;
             }
             _logger.LogInformation($"Processed {tyres.Count} tyres, notified: {count}, skipped: {skipped}");

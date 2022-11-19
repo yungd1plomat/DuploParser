@@ -10,11 +10,11 @@ namespace DuploParser.Models
 
         public bool? Pins { get; set; }
 
-        public int? Width { get; set; }
+        public double? Width { get; set; }
 
-        public int? Profile { get; set; }
+        public double? Profile { get; set; }
 
-        public int? Radius { get; set; }
+        public double? Radius { get; set; }
         
         public bool? RunFlat { get; set; }
 
