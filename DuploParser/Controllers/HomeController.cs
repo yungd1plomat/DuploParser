@@ -33,5 +33,16 @@ namespace DuploParser.Controllers
             await _database.SaveChangesAsync();
             return RedirectToAction("Index");
         }
+
+        [HttpGet("delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var filter = await _database.Filters.FirstOrDefaultAsync(x => x.Id == id);
+            if (filter is null)
+                return NotFound();
+            _database.Filters.Remove(filter);
+            await _database.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
     }
 }

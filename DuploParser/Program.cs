@@ -1,7 +1,6 @@
 using DuploParser.Models;
 using System.Diagnostics;
 using System.Net.Http.Headers;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace DuploParser
 {

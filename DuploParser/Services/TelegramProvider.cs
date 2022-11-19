@@ -1,4 +1,5 @@
 ﻿using DuploParser.Abstractions;
+using DuploParser.Helpers;
 using DuploParser.Models;
 using DuploParser.Models.Api;
 using System.Collections.Concurrent;
@@ -35,15 +36,15 @@ namespace DuploParser.Services
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("*");
-            sb.Append(tyre.Brand.Name);
-            sb.Append(tyre.Model.Name);
+            sb.Append(tyre.Brand.Name.Escape());
+            sb.Append(tyre.Model.Name.Escape());
             sb.Append("*");
             sb.AppendLine();
             sb.AppendLine();
             sb.Append("*Сезон: *");
-            sb.AppendLine(tyre.Params.Season.Name);
+            sb.AppendLine(tyre.Params.Season.Name.Escape());
             sb.Append("*Размер: *");
-            sb.AppendLine(tyre.SizeText);
+            sb.AppendLine(tyre.SizeText.Escape());
             sb.Append("*Шипы: *");
             sb.AppendLine(tyre.Params.Pins.ToString());
             sb.Append("*RunFlat: *");
@@ -55,7 +56,7 @@ namespace DuploParser.Services
             sb.Append("*Сток: *");
             sb.AppendLine(tyre.Stock.Amount.ToString());
             sb.AppendLine();
-            sb.Append($"[Ссылка](https://duplo.shinservice.ru/tyre/{tyre.Brand.UrlPath}/{tyre.Model.UrlPath}/{tyre.Id})");
+            sb.Append($"[Ссылка](https://duplo.shinservice.ru/tyre/{tyre.Brand.UrlPath.Escape()}/{tyre.Model.UrlPath.Escape()}/{tyre.Id.Escape()})");
             return sb.ToString();
         }
 
