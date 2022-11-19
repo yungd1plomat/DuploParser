@@ -18,7 +18,7 @@ namespace DuploParser.Services
         private readonly ITelegramService _telegramService;
         private IList<string> _allTyres { get; set; }
 
-        public MonitorService(IDuploApi api, IServiceScopeFactory scopeFactory, ILogger logger, ITelegramService telegramService)
+        public MonitorService(IDuploApi api, IServiceScopeFactory scopeFactory, ILogger<MonitorService> logger, ITelegramService telegramService)
         {
             _api = api;
             _scopeFactory = scopeFactory;
@@ -52,11 +52,13 @@ namespace DuploParser.Services
                         }
                         var ids = tyres.Select(x => x.Id).ToList();
                         localTyres.AddRange(ids);
+                        _logger.LogInformation($"Processing page {offset}");
                         await ProcessTyres(tyres, filters);
+                        offset++;
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, ex.StackTrace);
+                        _logger.LogError(ex, ex.Message);
                     }
                     await Task.Delay(200);
                 }
@@ -66,18 +68,20 @@ namespace DuploParser.Services
         private async Task ProcessTyres(IList<Tyre> tyres, IList<Filter> filters)
         {
             int count = 0;
+            int skipped = 0;
             foreach (var tyre in tyres)
             {
                 if (_allTyres.Contains(tyre.Id) ||
                     !filters.Any(filter => CompareFilter(tyre, filter)))
                 {
+                    skipped++;
                     continue;
                 }
                 _allTyres.Add(tyre.Id);
                 await _telegramService.SendTyre(tyre);
                 count++;
             }
-            _logger.LogInformation($"Processed {tyres.Count} tyres, notified: {count}");
+            _logger.LogInformation($"Processed {tyres.Count} tyres, notified: {count}, skipped: {skipped}");
         }
 
         private bool CompareFilter(Tyre tyre, Filter filter)

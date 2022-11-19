@@ -7,7 +7,7 @@ namespace DuploParser.Models.Api
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonPropertyName("name")]
+        [JsonPropertyName("logoUrl")]
         public string LogoUrl { get; set; }
 
         [JsonPropertyName("url")]

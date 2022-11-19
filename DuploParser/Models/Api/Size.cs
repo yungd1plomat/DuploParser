@@ -5,12 +5,12 @@ namespace DuploParser.Models.Api
     public class Size
     {
         [JsonPropertyName("radius")]
-        public int Radius { get; set; }
+        public double Radius { get; set; }
 
         [JsonPropertyName("profile")]
-        public int Profile { get; set; }
+        public double Profile { get; set; }
 
         [JsonPropertyName("width")]
-        public int Width { get; set; }
+        public double Width { get; set; }
     }
 }

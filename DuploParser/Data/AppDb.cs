@@ -10,6 +10,7 @@ namespace DuploParser.Data
         public AppDb(DbContextOptions<AppDb> options) 
             : base(options) 
         {
+            Database.EnsureCreated();
         }
 
     }

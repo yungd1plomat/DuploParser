@@ -17,7 +17,7 @@ namespace DuploParser
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionStr = Configuration["DUPLO_CONNECTION"] ?? throw new InvalidOperationException("connection string not found");
-            var bearerToken = Configuration["STEAM_API_KEY"] ?? throw new InvalidOperationException("bearer token not found");
+            var bearerToken = Configuration["BEARER_TOKEN"] ?? throw new InvalidOperationException("bearer token not found");
             var botToken = Configuration["BOT_TOKEN"] ?? throw new InvalidOperationException("bot token not found");
             var channelId = Configuration["CHANNEL_ID"] ?? throw new InvalidOperationException("channel id not found");
 
