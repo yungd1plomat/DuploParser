@@ -33,15 +33,22 @@
                 <tbody>
                         @foreach (var filter in Model)
                         {
-                            <tr>
-                                <td data-title="Id">@filter.Id</td>
-                                <td data-title="Сезон">@filter.Season</td>
-                                <td data-title="Шипы">@filter.Pins</td>
-                                <td data-title="Ширина">@filter.Width</td>
-                                <td data-title="Профиль">@filter.Profile</td>
-                                <td data-title="Радиус">@filter.Radius</td>
-                                <td data-title="RunFlat">@filter.RunFlat</td>
-                                <td data-title="Код">@filter.Code</td>
+                            var season = filter.Season ?? "Не важно";
+                            var pins = filter.Pins.HasValue ? filter.Pins.ToString() : "Не важно";
+                            var width = filter.Width.HasValue ? filter.Width.ToString() : "Не важно";
+                            var profile = filter.Profile.HasValue ? filter.Profile.ToString() : "Не важно";
+                            var radius = filter.Radius.HasValue ? filter.Radius.ToString() : "Не важно";
+                            var runFlat = filter.RunFlat.HasValue ? filter.RunFlat.ToString() : "Не важно";
+                            var code = filter.Code ?? "Не важно";
+                        <tr>
+                            <td data-title="Id">@filter.Id</td>
+                                <td data-title="Сезон">@season</td>
+                                <td data-title="Шипы">@pins</td>
+                                <td data-title="Ширина">@width</td>
+                                <td data-title="Профиль">@profile</td>
+                                <td data-title="Радиус">@radius</td>
+                                <td data-title="RunFlat">@runFlat</td>
+                                <td data-title="Код">@code</td>
                                 <td data-title="Действие"><a href="../delete/@filter.Id">Delete</a></td>
                             </tr>
                         }
