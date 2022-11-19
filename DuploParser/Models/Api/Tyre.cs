@@ -16,6 +16,9 @@ namespace DuploParser.Models.Api
         [JsonPropertyName("sizeText")]
         public string SizeText { get; set; }
 
+        [JsonPropertyName("params")]
+        public Params Params { get; set; }
+
         [JsonPropertyName("brand")]
         public Brand Brand { get; set; }
 

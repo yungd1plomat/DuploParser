@@ -1,6 +1,7 @@
 ﻿using DuploParser.Abstractions;
+using DuploParser.Data;
 using DuploParser.Services;
-using LiteDB;
+using Microsoft.EntityFrameworkCore;
 
 namespace DuploParser
 {
@@ -15,8 +16,14 @@ namespace DuploParser
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<LiteDatabase>(db => new LiteDatabase("duplo.db"));
-            services.AddSingleton<IDuploApi, DuploApi>(api => new DuploApi(Configuration["BearerToken"]));
+            var connectionStr = Configuration["DUPLO_CONNECTION"] ?? throw new InvalidOperationException("connection string not found");
+            var bearerToken = Configuration["STEAM_API_KEY"] ?? throw new InvalidOperationException("bearer token not found");
+            var botToken = Configuration["BOT_TOKEN"] ?? throw new InvalidOperationException("bot token not found");
+            var channelId = Configuration["CHANNEL_ID"] ?? throw new InvalidOperationException("channel id not found");
+
+            services.AddDbContext<AppDb>(options => options.UseMySql(connectionStr, new MySqlServerVersion(new Version(8, 0, 27))));
+            services.AddSingleton<IDuploApi, DuploApi>(service => new DuploApi(bearerToken));
+            services.AddSingleton<ITelegramService, TelegramService>(service => new TelegramService(botToken, channelId));
             services.AddHostedService<MonitorService>();
             services.AddControllersWithViews();
         }

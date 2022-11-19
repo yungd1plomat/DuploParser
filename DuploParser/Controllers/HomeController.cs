@@ -1,5 +1,5 @@
-﻿using DuploParser.Models;
-using LiteDB;
+﻿using DuploParser.Data;
+using DuploParser.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -10,9 +10,9 @@ namespace DuploParser.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        private readonly LiteDatabase _database;
+        private readonly AppDb _database;
 
-        public HomeController(ILogger<HomeController> logger, LiteDatabase database)
+        public HomeController(ILogger<HomeController> logger, AppDb database)
         {
             _logger = logger;
             _database = database;

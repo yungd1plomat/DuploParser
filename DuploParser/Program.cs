@@ -1,5 +1,4 @@
 using DuploParser.Models;
-using LiteDB;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using JsonSerializer = System.Text.Json.JsonSerializer;

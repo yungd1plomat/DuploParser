@@ -1,5 +1,8 @@
 ﻿using DuploParser.Abstractions;
-using LiteDB;
+using DuploParser.Data;
+using DuploParser.Models;
+using DuploParser.Models.Api;
+using Microsoft.EntityFrameworkCore;
 using System.Threading;
 
 namespace DuploParser.Services
@@ -8,35 +11,84 @@ namespace DuploParser.Services
     {
         private readonly IDuploApi _api;
 
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        private readonly LiteDatabase _liteDB;
+        private readonly ILogger _logger;
 
-        public MonitorService(IDuploApi api, IServiceProvider provider)
+        private readonly ITelegramService _telegramService;
+        private IList<string> _allTyres { get; set; }
+
+        public MonitorService(IDuploApi api, IServiceScopeFactory scopeFactory, ILogger logger, ITelegramService telegramService)
         {
             _api = api;
-            _serviceProvider = provider;
-            _liteDB = provider.GetRequiredService<LiteDatabase>();
+            _scopeFactory = scopeFactory;
+            _logger = logger;
+            _telegramService = telegramService;
+            _allTyres = new List<string>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            int offset = 0;
-            while (!stoppingToken.IsCancellationRequested)
+            // Не рекомендуется инъекция scoped сервисов в singleton, поэтому будем сами управлять жизненным циклом бд
+            using (var scope = _scopeFactory.CreateScope())
             {
-                try
+                var db = scope.ServiceProvider.GetRequiredService<AppDb>();
+                int offset = 0;
+                var localTyres = new List<string>();
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    var tyres = _api.GetTyresAsync(offset);
-
+                    var filters = await db.Filters.ToListAsync();
+                    try
+                    {
+                        var tyres = await _api.GetTyresAsync(offset);
+                        if (tyres is null || !tyres.Any())
+                        {
+                            var notAviables = _allTyres.Except(localTyres);
+                            foreach (var tyre in notAviables)
+                                _allTyres.Remove(tyre);
+                            localTyres.Clear();
+                            offset = 0;
+                            continue;
+                        }
+                        var ids = tyres.Select(x => x.Id).ToList();
+                        localTyres.AddRange(ids);
+                        await ProcessTyres(tyres, filters);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, ex.StackTrace);
+                    }
+                    await Task.Delay(200);
                 }
-                catch (Exception ex)
-                {
-                    
-                }
-                await Task.Delay(5000);
             }
         }
 
+        private async Task ProcessTyres(IList<Tyre> tyres, IList<Filter> filters)
+        {
+            int count = 0;
+            foreach (var tyre in tyres)
+            {
+                if (_allTyres.Contains(tyre.Id) ||
+                    !filters.Any(filter => CompareFilter(tyre, filter)))
+                {
+                    continue;
+                }
+                _allTyres.Add(tyre.Id);
+                await _telegramService.SendTyre(tyre);
+                count++;
+            }
+            _logger.LogInformation($"Processed {tyres.Count} tyres, notified: {count}");
+        }
 
+        private bool CompareFilter(Tyre tyre, Filter filter)
+        {
+            return (string.IsNullOrEmpty(filter.Season) || filter.Season == tyre.Params.Season.Name) &&
+                   (filter.Pins is null || filter.Pins == tyre.Params.Pins) &&
+                   (filter.Width is null || filter.Width == tyre.Size.Width) &&
+                   (filter.Profile is null || filter.Profile == tyre.Size.Profile) &&
+                   (filter.Radius is null || filter.Radius == tyre.Size.Radius) &&
+                   (filter.RunFlat is null || filter.RunFlat == tyre.Params.RunFlat) &&
+                   (string.IsNullOrEmpty(filter.Code) || filter.Code == tyre.Sku);
+        }
     }
 }
