@@ -9,12 +9,9 @@ namespace DuploParser
     {
         public IConfiguration Configuration { get; }
 
-        private readonly ILogger<Startup> _logger;
-
-        public Startup(IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _logger = logger;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -23,10 +20,10 @@ namespace DuploParser
             var bearerToken = Configuration["BEARER_TOKEN"] ?? throw new InvalidOperationException("bearer token not found");
             var botToken = Configuration["BOT_TOKEN"] ?? throw new InvalidOperationException("bot token not found");
             var channelId = Configuration["CHANNEL_ID"] ?? throw new InvalidOperationException("channel id not found");
-            _logger.LogInformation($"Connection string: {connectionStr}");
-            _logger.LogInformation($"Bearer: {bearerToken}");
-            _logger.LogInformation($"Bot: {botToken}");
-            _logger.LogInformation($"Channel ID: {channelId}");
+            Console.WriteLine($"Connection string: {connectionStr}");
+            Console.WriteLine($"Bearer: {bearerToken}");
+            Console.WriteLine($"Bot: {botToken}");
+            Console.WriteLine($"Channel ID: {channelId}");
 
             services.AddDbContext<AppDb>(options => options.UseMySql(connectionStr, new MySqlServerVersion(new Version(8, 0, 27))));
             services.AddSingleton<IDuploApi, DuploApi>(service => new DuploApi(bearerToken));
