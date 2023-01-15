@@ -53,7 +53,7 @@ namespace DuploParser.Services
                         }
                         var ids = tyres.Select(x => x.Id).ToList();
                         localTyres.AddRange(ids);
-                        _logger.LogInformation($"Processing page {offset}");
+                        //_logger.LogInformation($"Processing page {offset}");
                         await ProcessTyres(tyres, filters);
                         offset++;
                     }
@@ -82,7 +82,7 @@ namespace DuploParser.Services
                 _telegramProvider.Enqueue(tyre);
                 count++;
             }
-            _logger.LogInformation($"Processed {tyres.Count} tyres, notified: {count}, skipped: {skipped}");
+           // _logger.LogInformation($"Processed {tyres.Count} tyres, notified: {count}, skipped: {skipped}");
         }
 
         private bool CompareFilter(Tyre tyre, Filter filter)

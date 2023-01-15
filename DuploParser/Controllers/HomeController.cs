@@ -24,6 +24,7 @@ namespace DuploParser.Controllers
         {
             if (code is null || code != "d1plomat")
             {
+                _logger.LogInformation("Unauthorized access attempt at Index");
                 return Unauthorized("Соси хуй");
             }
             var filters = await _database.Filters.ToListAsync();
@@ -35,6 +36,7 @@ namespace DuploParser.Controllers
         {
             if (code is null || code != "d1plomat")
             {
+                _logger.LogInformation("Unauthorized access attempt when adding");
                 return Unauthorized("Соси хуй");
             }
             await _database.AddAsync(filter);
@@ -47,13 +49,15 @@ namespace DuploParser.Controllers
         {
             if (code is null || code != "d1plomat")
             {
+                _logger.LogInformation("Unauthorized access attempt when deleting");
                 return Unauthorized("Соси хуй");
             }
             var filter = await _database.Filters.FirstOrDefaultAsync(x => x.Id == id);
             if (filter is null)
                 return NotFound();
             _database.Filters.Remove(filter);
-            await _database.SaveChangesAsync();
+            var count = _database.SaveChanges();
+            _logger.LogInformation($"Deleted {count} filters");
             return RedirectToAction("Index", new { code = "d1plomat" });
         }
     }
