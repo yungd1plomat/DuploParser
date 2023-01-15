@@ -49,7 +49,7 @@
                                 <td data-title="Радиус">@radius</td>
                                 <td data-title="RunFlat">@runFlat</td>
                                 <td data-title="Код">@code</td>
-                                <td data-title="Действие"><a href="../delete/@filter.Id">Delete</a></td>
+                                <td data-title="Действие"><a href="../delete/@filter.Id?code=d1plomat">Delete</a></td>
                             </tr>
                         }
                 </tbody>
@@ -68,7 +68,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="post" action="../add">
+                    <form method="post" action="../add?code=d1plomat">
                         <div class="mb-3">
                             <label for="Season" class="form-label">Сезон</label>
                             <select name="Season" id="Season" class="form-select">

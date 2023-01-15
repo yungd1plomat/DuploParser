@@ -20,29 +20,41 @@ namespace DuploParser.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? code)
         {
+            if (code is null || code != "d1plomat")
+            {
+                return Unauthorized("Соси хуй");
+            }
             var filters = await _database.Filters.ToListAsync();
             return View(filters);
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add([FromForm] Filter filter)
+        public async Task<IActionResult> Add([FromQuery] string? code, [FromForm] Filter filter)
         {
+            if (code is null || code != "d1plomat")
+            {
+                return Unauthorized("Соси хуй");
+            }
             await _database.AddAsync(filter);
             await _database.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { code = "d1plomat" });
         }
 
         [HttpGet("delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string? code, int id)
         {
+            if (code is null || code != "d1plomat")
+            {
+                return Unauthorized("Соси хуй");
+            }
             var filter = await _database.Filters.FirstOrDefaultAsync(x => x.Id == id);
             if (filter is null)
                 return NotFound();
             _database.Filters.Remove(filter);
             await _database.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { code = "d1plomat" });
         }
     }
 }
