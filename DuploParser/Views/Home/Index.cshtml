@@ -20,6 +20,7 @@
                 <thead>
                     <tr>
                         <th scope="col">Id</th>
+                        <th scope="col">Бренд</th>
                         <th scope="col">Сезон</th>
                         <th scope="col">Шипы</th>
                         <th scope="col">Ширина</th>
@@ -40,8 +41,10 @@
                             var radius = filter.Radius.HasValue ? filter.Radius.ToString() : "Не важно";
                             var runFlat = filter.RunFlat.HasValue ? filter.RunFlat.ToString() : "Не важно";
                             var code = filter.Code ?? "Не важно";
-                        <tr>
-                            <td data-title="Id">@filter.Id</td>
+                            var brand = filter.Brand ?? "Не важно";
+                            <tr>
+                                <td data-title="Id">@filter.Id</td>
+                                <td data-title="Бренд">@brand</td>
                                 <td data-title="Сезон">@season</td>
                                 <td data-title="Шипы">@pins</td>
                                 <td data-title="Ширина">@width</td>
@@ -69,6 +72,10 @@
                 </div>
                 <div class="modal-body">
                     <form method="post" action="../add?code=d1plomat">
+                        <div class="mb-3">
+                            <label for="Brand" class="form-label">Бренд</label>
+                            <input name="Brand" type="text" class="form-control" id="Brand">
+                        </div>
                         <div class="mb-3">
                             <label for="Season" class="form-label">Сезон</label>
                             <select name="Season" id="Season" class="form-select">

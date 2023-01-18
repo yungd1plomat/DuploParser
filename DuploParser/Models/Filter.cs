@@ -6,6 +6,8 @@ namespace DuploParser.Models
     {
         public int Id { get; set; }
 
+        public string? Brand { get; set; }
+
         public string? Season { get; set; }
 
         public bool? Pins { get; set; }

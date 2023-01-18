@@ -88,6 +88,7 @@ namespace DuploParser.Services
         private bool CompareFilter(Tyre tyre, Filter filter)
         {
             return (string.IsNullOrEmpty(filter.Season) || filter.Season == tyre.Params.Season.Name) &&
+                   (string.IsNullOrEmpty(filter.Brand) || tyre.Brand.Name.ToLower().Contains(filter.Brand.ToLower())) &&
                    (filter.Pins is null || filter.Pins == tyre.Params.Pins) &&
                    (filter.Width is null || filter.Width == tyre.Size.Width) &&
                    (filter.Profile is null || filter.Profile == tyre.Size.Profile) &&
