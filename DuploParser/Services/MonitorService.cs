@@ -44,7 +44,9 @@ namespace DuploParser.Services
                         var tyres = await _api.GetTyresAsync(offset);
                         if (tyres is null || !tyres.Any())
                         {
-                            var notAviables = _allTyres.Except(localTyres);
+                            // Collection was modified; enumeration operation may not execute.
+                            // пытаемся фиксить копированием коллекци localTyres.ToList()
+                            var notAviables = _allTyres.Except(localTyres.ToList());
                             foreach (var tyre in notAviables)
                                 _allTyres.Remove(tyre);
                             localTyres.Clear();
